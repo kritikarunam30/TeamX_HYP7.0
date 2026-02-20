@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Health Assessment Results | Health AI</title>
+  <meta name="description" content="View your comprehensive health risk assessment results with personalized recommendations.">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="icon" href="/static/favicon.ico">
+</head>
+<body>
+  <!-- Header -->
+  {% include "components/header.html" %}
+
+  <div class="container" style="padding: 3rem 1rem;">
+    <div class="max-w-6xl" style="margin: 0 auto;">
+      
+      {% if has_results %}
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="mb-4">🎯 Your Health Assessment Results</h1>
+        <p class="text-muted" style="font-size: 1.125rem;">
+          Comprehensive AI-powered analysis based on your health data
+        </p>
+      </div>
+
+      <!-- Overall Score -->
+      <div class="card mb-8" style="padding: 3rem 2rem; text-align: center; background: linear-gradient(135deg, rgba(14, 165, 233, 0.05) 0%, rgba(14, 165, 233, 0.02) 100%); box-shadow: var(--shadow-elevated);">
+        <h2 class="mb-6" style="font-size: 1.5rem;">Overall Health Score</h2>
+        
+        {% set score = assessment_data.health_score %}
+        {% set grade = assessment_data.health_grade %}
+        {% set risk_level = assessment_data.risk_level %}
+        
+        {% if score >= 70 %}
+          {% set score_color = "var(--success)" %}
+        {% elif score >= 50 %}
+          {% set score_color = "var(--warning)" %}
+        {% else %}
+          {% set score_color = "var(--danger)" %}
+        {% endif %}
+        
+        <div style="font-size: 6rem; font-weight: 700; color: {{ score_color }}; margin-bottom: 1rem; line-height: 1;">
+          {{ "%.0f"|format(score) }}
+          <span style="font-size: 2rem; opacity: 0.7;">/100</span>
+        </div>
+        <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">Grade: {{ grade }}</div>
+        <p class="text-muted" style="font-size: 1.125rem; text-transform: capitalize;">{{ risk_level }} Risk Level</p>
+        <p class="text-muted mt-4" style="font-size: 0.875rem;">
+          Composite Risk Score: {{ "%.1f"|format(assessment_data.composite_risk) }}%
+        </p>
+      </div>
+
+      <!-- Individual Risks Grid -->
+      <div class="grid md:grid-cols-2 mb-8">
+        <!-- Heart Disease -->
+        {% set heart = assessment_data.individual_risks.heart_disease %}
+        {% set heart_score = heart.score %}
+        {% if heart_score < 30 %}
+          {% set heart_color = "var(--success)" %}
+          {% set heart_badge = "badge-success" %}
+        {% elif heart_score < 50 %}
+          {% set heart_color = "var(--warning)" %}
+          {% set heart_badge = "badge-warning" %}
+        {% elif heart_score < 70 %}
+          {% set heart_color = "var(--danger)" %}
+          {% set heart_badge = "badge-danger" %}
+        {% else %}
+          {% set heart_color = "#dc2626" %}
+          {% set heart_badge = "badge-danger" %}
+        {% endif %}
+        
+        <div class="card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="flex items-center gap-2" style="margin: 0; font-size: 1.25rem;">
+              <div style="width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: rgba(239, 68, 68, 0.1); display: flex; align-items: center; justify-content: center; color: #ef4444;">
+                <svg style="width: 1.5rem; height: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+              </div>
+              Heart Disease
+            </h3>
+            <span class="badge {{ heart_badge }}" style="font-size: 0.875rem;">{{ "%.1f"|format(heart_score) }}%</span>
+          </div>
+          <div class="progress mb-3">
+            <div class="progress-bar" style="width: {{ heart_score }}%; background: {{ heart_color }};"></div>
+          </div>
+          <p class="text-muted" style="font-size: 0.875rem; text-transform: capitalize;">
+            Risk Level: <strong>{{ heart.level }}</strong>
+          </p>
+        </div>
+
+        <!-- Diabetes -->
+        {% set diabetes = assessment_data.individual_risks.diabetes %}
+        {% set diabetes_score = diabetes.score %}
+        {% if diabetes_score < 30 %}
+          {% set diabetes_color = "var(--success)" %}
+          {% set diabetes_badge = "badge-success" %}
+        {% elif diabetes_score < 50 %}
+          {% set diabetes_color = "var(--warning)" %}
+          {% set diabetes_badge = "badge-warning" %}
+        {% else %}
+          {% set diabetes_color = "var(--danger)" %}
+          {% set diabetes_badge = "badge-danger" %}
+        {% endif %}
+        
+        <div class="card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="flex items-center gap-2" style="margin: 0; font-size: 1.25rem;">
+              <div style="width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: rgba(245, 158, 11, 0.1); display: flex; align-items: center; justify-content: center; color: #f59e0b;">
+                <svg style="width: 1.5rem; height: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                </svg>
+              </div>
+              Diabetes
+            </h3>
+            <span class="badge {{ diabetes_badge }}" style="font-size: 0.875rem;">{{ "%.1f"|format(diabetes_score) }}%</span>
+          </div>
+          <div class="progress mb-3">
+            <div class="progress-bar" style="width: {{ diabetes_score }}%; background: {{ diabetes_color }};"></div>
+          </div>
+          <p class="text-muted" style="font-size: 0.875rem; text-transform: capitalize;">
+            Risk Level: <strong>{{ diabetes.level }}</strong>
+          </p>
+        </div>
+
+        <!-- Hypertension -->
+        {% set hypertension = assessment_data.individual_risks.hypertension %}
+        {% set hypertension_score = hypertension.score %}
+        {% if hypertension_score < 30 %}
+          {% set hypertension_color = "var(--success)" %}
+          {% set hypertension_badge = "badge-success" %}
+        {% elif hypertension_score < 50 %}
+          {% set hypertension_color = "var(--warning)" %}
+          {% set hypertension_badge = "badge-warning" %}
+        {% else %}
+          {% set hypertension_color = "var(--danger)" %}
+          {% set hypertension_badge = "badge-danger" %}
+        {% endif %}
+        
+        <div class="card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="flex items-center gap-2" style="margin: 0; font-size: 1.25rem;">
+              <div style="width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: rgba(168, 85, 247, 0.1); display: flex; align-items: center; justify-content: center; color: #a855f7;">
+                <svg style="width: 1.5rem; height: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+              </div>
+              Hypertension
+            </h3>
+            <span class="badge {{ hypertension_badge }}" style="font-size: 0.875rem;">{{ "%.1f"|format(hypertension_score) }}%</span>
+          </div>
+          <div class="progress mb-3">
+            <div class="progress-bar" style="width: {{ hypertension_score }}%; background: {{ hypertension_color }};"></div>
+          </div>
+          <p class="text-muted" style="font-size: 0.875rem; text-transform: capitalize;">
+            Risk Level: <strong>{{ hypertension.level }}</strong>
+          </p>
+        </div>
+
+        <!-- Obesity -->
+        {% set obesity = assessment_data.individual_risks.obesity %}
+        {% set obesity_score = obesity.score %}
+        {% if obesity_score < 30 %}
+          {% set obesity_color = "var(--success)" %}
+          {% set obesity_badge = "badge-success" %}
+        {% elif obesity_score < 50 %}
+          {% set obesity_color = "var(--warning)" %}
+          {% set obesity_badge = "badge-warning" %}
+        {% else %}
+          {% set obesity_color = "var(--danger)" %}
+          {% set obesity_badge = "badge-danger" %}
+        {% endif %}
+        
+        <div class="card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="flex items-center gap-2" style="margin: 0; font-size: 1.25rem;">
+              <div style="width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: rgba(59, 130, 246, 0.1); display: flex; align-items: center; justify-content: center; color: #3b82f6;">
+                <svg style="width: 1.5rem; height: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path>
+                </svg>
+              </div>
+              Obesity
+            </h3>
+            <span class="badge {{ obesity_badge }}" style="font-size: 0.875rem;">{{ "%.1f"|format(obesity_score) }}%</span>
+          </div>
+          <div class="progress mb-3">
+            <div class="progress-bar" style="width: {{ obesity_score }}%; background: {{ obesity_color }};"></div>
+          </div>
+          <p class="text-muted" style="font-size: 0.875rem; text-transform: capitalize;">
+            Risk Level: <strong>{{ obesity.level }}</strong>
+          </p>
+        </div>
+      </div>
+
+      <!-- TRUE HEALTH SCORE (Multimodal) -->
+      {% if assessment_data.enhanced_health_score %}
+      <div class="card mb-8" style="padding: 3rem 2rem; background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.02) 100%); border: 2px solid rgba(16, 185, 129, 0.2); box-shadow: var(--shadow-elevated);">
+        <div class="text-center mb-6">
+          <div style="display: inline-block; padding: 0.5rem 1.5rem; background: rgba(16, 185, 129, 0.1); border-radius: 50px; margin-bottom: 1rem;">
+            <span style="color: #059669; font-weight: 700; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">🎯 Enhanced Analysis</span>
+          </div>
+          <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">TRUE Health Score</h2>
+          <p class="text-muted" style="font-size: 1rem;">Physiological Data + Facial Analysis + Voice Patterns</p>
+        </div>
+
+        <!-- Enhanced Score Display -->
+        {% set enhanced_score = assessment_data.enhanced_health_score %}
+        {% set enhanced_grade = assessment_data.enhanced_grade %}
+        
+        {% if enhanced_score >= 70 %}
+          {% set enhanced_color = "#10b981" %}
+          {% set enhanced_bg = "rgba(16, 185, 129, 0.1)" %}
+        {% elif enhanced_score >= 50 %}
+          {% set enhanced_color = "#f59e0b" %}
+          {% set enhanced_bg = "rgba(245, 158, 11, 0.1)" %}
+        {% else %}
+          {% set enhanced_color = "#ef4444" %}
+          {% set enhanced_bg = "rgba(239, 68, 68, 0.1)" %}
+        {% endif %}
+        
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <div style="font-size: 5rem; font-weight: 800; color: {{ enhanced_color }}; margin-bottom: 0.5rem; line-height: 1;">
+            {{ "%.0f"|format(enhanced_score) }}
+            <span style="font-size: 1.75rem; opacity: 0.7;">/100</span>
+          </div>
+          <div style="display: inline-block; padding: 0.75rem 2rem; background: {{ enhanced_bg }}; border-radius: 50px; margin-bottom: 1rem;">
+            <span style="font-size: 2rem; font-weight: 700; color: {{ enhanced_color }};">Grade: {{ enhanced_grade }}</span>
+          </div>
+          <p class="text-muted" style="font-size: 1rem;">
+            Enhanced Risk: {{ "%.1f"|format(assessment_data.enhanced_composite_risk) }}%
+          </p>
+        </div>
+
+        <!-- Modality Breakdown -->
+        <div style="background: white; border-radius: 1rem; padding: 2rem; margin-bottom: 2rem;">
+          <h3 style="font-size: 1.25rem; margin-bottom: 1.5rem; text-align: center; color: #1e293b;">
+            📊 Contribution Breakdown
+          </h3>
+          
+          <div class="grid md:grid-cols-3 gap-4">
+            <!-- Physiological -->
+            <div style="text-align: center; padding: 1.5rem; background: rgba(14, 165, 233, 0.05); border-radius: 0.75rem;">
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🏥</div>
+              <div style="font-size: 1.5rem; font-weight: 700; color: #0ea5e9; margin-bottom: 0.25rem;">60%</div>
+              <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem;">Physiological</div>
+              <div style="font-size: 1.25rem; font-weight: 600; color: #1e293b;">{{ "%.0f"|format(assessment_data.health_score) }}/100</div>
+              <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">ML Models</div>
+            </div>
+
+            <!-- Facial -->
+            <div style="text-align: center; padding: 1.5rem; background: rgba(168, 85, 247, 0.05); border-radius: 0.75rem;">
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎭</div>
+              <div style="font-size: 1.5rem; font-weight: 700; color: #a855f7; margin-bottom: 0.25rem;">30%</div>
+              <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem;">Facial Analysis</div>
+              {% if assessment_data.facial_contribution.available %}
+                <div style="font-size: 1.25rem; font-weight: 600; color: #1e293b;">
+                  {{ "%.1f"|format(assessment_data.facial_contribution.modifier) }}
+                </div>
+                <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Impact Score</div>
+              {% else %}
+                <div style="font-size: 0.875rem; color: #94a3b8;">Not Available</div>
+              {% endif %}
+            </div>
+
+            <!-- Voice -->
+            <div style="text-align: center; padding: 1.5rem; background: rgba(245, 158, 11, 0.05); border-radius: 0.75rem;">
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎤</div>
+              <div style="font-size: 1.5rem; font-weight: 700; color: #f59e0b; margin-bottom: 0.25rem;">10%</div>
+              <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem;">Voice Analysis</div>
+              {% if assessment_data.voice_contribution.available %}
+                <div style="font-size: 1.25rem; font-weight: 600; color: #1e293b;">
+                  {{ "%.1f"|format(assessment_data.voice_contribution.modifier) }}
+                </div>
+                <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Impact Score</div>
+              {% else %}
+                <div style="font-size: 0.875rem; color: #94a3b8;">Placeholder</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Facial Indicators Detail -->
+        {% if assessment_data.facial_indicators and assessment_data.facial_indicators.avg_pain_score is defined %}
+        <div style="background: white; border-radius: 1rem; padding: 2rem;">
+          <h3 style="font-size: 1.25rem; margin-bottom: 1.5rem; text-align: center; color: #1e293b;">
+            🎭 Facial Expression Analysis
+          </h3>
+          
+          <div class="grid md:grid-cols-3 gap-4">
+            <!-- Pain Score -->
+            {% set pain_score = assessment_data.facial_indicators.avg_pain_score %}
+            {% if pain_score < 3 %}
+              {% set pain_color = "#10b981" %}
+              {% set pain_text = "Low" %}
+            {% elif pain_score < 7 %}
+              {% set pain_color = "#f59e0b" %}
+              {% set pain_text = "Moderate" %}
+            {% else %}
+              {% set pain_color = "#ef4444" %}
+              {% set pain_text = "High" %}
+            {% endif %}
+            
+            <div style="padding: 1.5rem; border: 2px solid {{ pain_color }}; border-radius: 0.75rem; background: rgba(255,255,255,0.5);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <span style="font-size: 0.875rem; font-weight: 600; color: #64748b;">😣 Pain</span>
+                <span style="padding: 0.25rem 0.75rem; background: {{ pain_color }}; color: white; border-radius: 50px; font-size: 0.75rem; font-weight: 700;">{{ pain_text }}</span>
+              </div>
+              <div style="font-size: 2rem; font-weight: 700; color: {{ pain_color }}; margin-bottom: 0.25rem;">
+                {{ "%.1f"|format(pain_score) }}<span style="font-size: 1rem; opacity: 0.7;">/10</span>
+              </div>
+              <div class="progress" style="height: 8px; margin-top: 0.75rem;">
+                <div class="progress-bar" style="width: {{ pain_score * 10 }}%; background: {{ pain_color }};"></div>
+              </div>
+            </div>
+
+            <!-- Stress Score -->
+            {% set stress_score = assessment_data.facial_indicators.avg_stress_score %}
+            {% if stress_score < 3 %}
+              {% set stress_color = "#10b981" %}
+              {% set stress_text = "Low" %}
+            {% elif stress_score < 7 %}
+              {% set stress_color = "#f59e0b" %}
+              {% set stress_text = "Moderate" %}
+            {% else %}
+              {% set stress_color = "#ef4444" %}
+              {% set stress_text = "High" %}
+            {% endif %}
+            
+            <div style="padding: 1.5rem; border: 2px solid {{ stress_color }}; border-radius: 0.75rem; background: rgba(255,255,255,0.5);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <span style="font-size: 0.875rem; font-weight: 600; color: #64748b;">😰 Stress</span>
+                <span style="padding: 0.25rem 0.75rem; background: {{ stress_color }}; color: white; border-radius: 50px; font-size: 0.75rem; font-weight: 700;">{{ stress_text }}</span>
+              </div>
+              <div style="font-size: 2rem; font-weight: 700; color: {{ stress_color }}; margin-bottom: 0.25rem;">
+                {{ "%.1f"|format(stress_score) }}<span style="font-size: 1rem; opacity: 0.7;">/10</span>
+              </div>
+              <div class="progress" style="height: 8px; margin-top: 0.75rem;">
+                <div class="progress-bar" style="width: {{ stress_score * 10 }}%; background: {{ stress_color }};"></div>
+              </div>
+            </div>
+
+            <!-- Anxiety Score -->
+            {% set anxiety_score = assessment_data.facial_indicators.avg_anxiety_score %}
+            {% if anxiety_score < 3 %}
+              {% set anxiety_color = "#10b981" %}
+              {% set anxiety_text = "Low" %}
+            {% elif anxiety_score < 7 %}
+              {% set anxiety_color = "#f59e0b" %}
+              {% set anxiety_text = "Moderate" %}
+            {% else %}
+              {% set anxiety_color = "#ef4444" %}
+              {% set anxiety_text = "High" %}
+            {% endif %}
+            
+            <div style="padding: 1.5rem; border: 2px solid {{ anxiety_color }}; border-radius: 0.75rem; background: rgba(255,255,255,0.5);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <span style="font-size: 0.875rem; font-weight: 600; color: #64748b;">😟 Anxiety</span>
+                <span style="padding: 0.25rem 0.75rem; background: {{ anxiety_color }}; color: white; border-radius: 50px; font-size: 0.75rem; font-weight: 700;">{{ anxiety_text }}</span>
+              </div>
+              <div style="font-size: 2rem; font-weight: 700; color: {{ anxiety_color }}; margin-bottom: 0.25rem;">
+                {{ "%.1f"|format(anxiety_score) }}<span style="font-size: 1rem; opacity: 0.7;">/10</span>
+              </div>
+              <div class="progress" style="height: 8px; margin-top: 0.75rem;">
+                <div class="progress-bar" style="width: {{ anxiety_score * 10 }}%; background: {{ anxiety_color }};"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(14, 165, 233, 0.05); border-radius: 0.5rem; text-align: center;">
+            <p style="font-size: 0.875rem; color: #475569; margin: 0;">
+              📹 Analyzed from <strong>{{ assessment_data.facial_indicators.frame_count }}</strong> video frames during assessment
+            </p>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Comparison Card -->
+        <div style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%); border-radius: 1rem; padding: 2rem; margin-top: 2rem;">
+          <h3 style="font-size: 1.125rem; margin-bottom: 1rem; text-align: center; color: #1e293b;">
+            📈 Score Comparison
+          </h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div style="text-align: center; padding: 1.5rem; background: white; border-radius: 0.75rem;">
+              <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 600;">ML Models Only</div>
+              <div style="font-size: 2.5rem; font-weight: 700; color: #0ea5e9;">{{ "%.0f"|format(assessment_data.health_score) }}</div>
+              <div style="font-size: 0.875rem; color: #94a3b8; margin-top: 0.25rem;">Traditional Score</div>
+            </div>
+            <div style="text-align: center; padding: 1.5rem; background: white; border-radius: 0.75rem;">
+              <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 600;">With Multimodal Data</div>
+              <div style="font-size: 2.5rem; font-weight: 700; color: {{ enhanced_color }};">{{ "%.0f"|format(enhanced_score) }}</div>
+              <div style="font-size: 0.875rem; color: #94a3b8; margin-top: 0.25rem;">Enhanced TRUE Score</div>
+            </div>
+          </div>
+          
+          {% set difference = enhanced_score - assessment_data.health_score %}
+          <div style="text-align: center; margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.6); border-radius: 0.5rem;">
+            {% if difference < 0 %}
+              <span style="color: #ef4444; font-weight: 700;">▼ {{ "%.1f"|format(difference|abs) }} points lower</span>
+              <span style="color: #64748b; font-size: 0.875rem; margin-left: 0.5rem;">— Facial indicators detected concerns</span>
+            {% elif difference > 0 %}
+              <span style="color: #10b981; font-weight: 700;">▲ {{ "%.1f"|format(difference) }} points higher</span>
+              <span style="color: #64748b; font-size: 0.875rem; margin-left: 0.5rem;">— Better than physiological data suggests</span>
+            {% else %}
+              <span style="color: #64748b; font-weight: 700;">No significant difference</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Recommendations -->
+      <div class="card mb-8">
+        <h2 class="mb-6 flex items-center gap-3">
+          <div style="width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: rgba(14, 165, 233, 0.1); display: flex; align-items: center; justify-content: center; color: var(--primary);">
+            <svg style="width: 1.5rem; height: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+            </svg>
+          </div>
+          Personalized Health Recommendations
+        </h2>
+        
+        <div class="space-y-4">
+          {% for recommendation in assessment_data.recommendations %}
+          {% if 'HEART' in recommendation %}
+            {% set icon_bg = "rgba(239, 68, 68, 0.1)" %}
+            {% set icon_color = "#ef4444" %}
+            {% set icon_path = "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" %}
+          {% elif 'DIABETES' in recommendation or 'BLOOD' in recommendation %}
+            {% set icon_bg = "rgba(245, 158, 11, 0.1)" %}
+            {% set icon_color = "#f59e0b" %}
+            {% set icon_path = "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" %}
+          {% elif 'PRESSURE' in recommendation %}
+            {% set icon_bg = "rgba(168, 85, 247, 0.1)" %}
+            {% set icon_color = "#a855f7" %}
+            {% set icon_path = "M13 10V3L4 14h7v7l9-11h-7z" %}
+          {% elif 'WEIGHT' in recommendation %}
+            {% set icon_bg = "rgba(59, 130, 246, 0.1)" %}
+            {% set icon_color = "#3b82f6" %}
+            {% set icon_path = "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" %}
+          {% else %}
+            {% set icon_bg = "rgba(16, 185, 129, 0.1)" %}
+            {% set icon_color = "#10b981" %}
+            {% set icon_path = "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" %}
+          {% endif %}
+          
+          <div class="flex items-start gap-3" style="padding: 1rem; border-radius: 0.75rem; background: rgba(0, 0, 0, 0.02); border-left: 3px solid {{ icon_color }};">
+            <div style="width: 2rem; height: 2rem; border-radius: 0.5rem; background: {{ icon_bg }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg style="width: 1.25rem; height: 1.25rem; color: {{ icon_color }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ icon_path }}"></path>
+              </svg>
+            </div>
+            <div style="flex: 1;">
+              <p style="margin: 0; line-height: 1.6; white-space: pre-line;">{{ recommendation }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-4 justify-center mb-8" style="flex-wrap: wrap;">
+        <a href="/assessment" class="btn btn-outline btn-lg">Take Full Assessment Again</a>
+        <a href="/nutrition-scanner" class="btn btn-primary btn-lg">Scan Nutrition Labels</a>
+        <button onclick="generateHealthPlan()" class="btn btn-success btn-lg" id="generatePlanBtn">
+          <svg style="width: 1.25rem; height: 1.25rem; display: inline-block; vertical-align: middle; margin-right: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          Get Personalized Health Plan
+        </button>
+        <a href="/" class="btn btn-accent btn-lg">Back to Home</a>
+      </div>
+
+      <!-- Health Plan Modal -->
+      <div id="healthPlanModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+          <div class="modal-header">
+            <h2 style="margin: 0; display: flex; align-items: center; gap: 0.75rem;">
+              <div style="width: 3rem; height: 3rem; border-radius: 0.75rem; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white;">
+                <svg style="width: 1.75rem; height: 1.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+              Your Personalized Health Plan
+            </h2>
+            <button onclick="closeHealthPlanModal()" class="modal-close">&times;</button>
+          </div>
+          <div class="modal-body" id="healthPlanContent">
+            <!-- Content will be inserted here -->
+          </div>
+          <div class="modal-footer">
+            <a href="/download-report" class="btn btn-lg" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; border: none; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);">
+              <svg style="width: 1rem; height: 1rem; display: inline-block; vertical-align: middle; margin-right: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              📄 Download Medical Report PDF
+            </a>
+            <button onclick="closeHealthPlanModal()" class="btn btn-outline">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Disclaimer -->
+      <div class="alert alert-warning">
+        <div>
+          <strong>⚠️ Important Medical Disclaimer</strong>
+          <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+            This AI-based health assessment is for <strong>informational and educational purposes only</strong>. 
+            It should NOT be used as a substitute for professional medical advice, diagnosis, or treatment. 
+            Always consult with qualified healthcare professionals for personalized medical guidance and before making any health-related decisions.
+          </p>
+        </div>
+      </div>
+
+      {% else %}
+      <!-- No Results Available -->
+      <div class="text-center" style="padding: 4rem 1rem;">
+        <div style="width: 5rem; height: 5rem; border-radius: 1rem; background: rgba(14, 165, 233, 0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; color: var(--primary);">
+          <svg style="width: 3rem; height: 3rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+        <h1 class="mb-4">No Assessment Results Available</h1>
+        <p class="text-muted mb-8" style="font-size: 1.125rem; max-width: 32rem; margin-left: auto; margin-right: auto;">
+          You haven't completed a health assessment yet. Take our comprehensive assessment to get your personalized health insights.
+        </p>
+        <div class="flex gap-4 justify-center" style="flex-wrap: wrap;">
+          <a href="/assessment" class="btn btn-accent btn-lg">
+            <svg style="width: 1.5rem; height: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+            Start Full Assessment
+          </a>
+          <a href="/quick-assessment" class="btn btn-primary btn-lg">
+            Quick 2-Min Check
+          </a>
+          <a href="/sample-demo" class="btn btn-outline btn-lg">
+            View Sample Demo
+          </a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Footer -->
+  {% include "components/footer.html" %}
+
+  <script src="/static/js/common.js"></script>
+  
+  <style>
+    /* Modal Styles */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      width: 100%;
+      animation: slideUp 0.3s ease;
+    }
+    
+    .modal-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .modal-body {
+      padding: 2rem;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    
+    .modal-footer {
+      padding: 1.5rem 2rem;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      line-height: 1;
+      cursor: pointer;
+      color: #6b7280;
+      transition: color 0.2s;
+      padding: 0;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-close:hover {
+      color: #1f2937;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(2rem);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Loading Spinner */
+    .spinner {
+      display: inline-block;
+      width: 1.5rem;
+      height: 1.5rem;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Health Plan Content Styling */
+    #healthPlanContent h1,
+    #healthPlanContent h2,
+    #healthPlanContent h3 {
+      color: #1f2937;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+    
+    #healthPlanContent h1 {
+      font-size: 1.5rem;
+      border-bottom: 2px solid #10b981;
+      padding-bottom: 0.5rem;
+    }
+    
+    #healthPlanContent h2 {
+      font-size: 1.25rem;
+      color: #10b981;
+    }
+    
+    #healthPlanContent h3 {
+      font-size: 1.125rem;
+    }
+    
+    #healthPlanContent ul,
+    #healthPlanContent ol {
+      margin: 0.75rem 0;
+      padding-left: 1.5rem;
+    }
+    
+    #healthPlanContent li {
+      margin-bottom: 0.5rem;
+      line-height: 1.6;
+    }
+    
+    #healthPlanContent p {
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+      color: #374151;
+    }
+    
+    #healthPlanContent strong {
+      color: #1f2937;
+      font-weight: 600;
+    }
+  </style>
+  
+  <script>
+    let currentHealthPlan = null;
+    
+    async function generateHealthPlan() {
+      const btn = document.getElementById('generatePlanBtn');
+      const originalContent = btn.innerHTML;
+      
+      try {
+        // Disable button and show loading
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Generating Your Plan...';
+        
+        // Call API to generate health plan
+        const response = await fetch('/api/generate-health-plan', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || 'Failed to generate health plan');
+        }
+        
+        // Store the plan
+        currentHealthPlan = data.health_plan;
+        
+        // Format and display the plan
+        displayHealthPlan(data.health_plan);
+        
+        // Show success notification
+        showNotification('✅ Your personalized health plan has been generated!', 'success');
+        
+      } catch (error) {
+        console.error('Error generating health plan:', error);
+        showNotification('❌ Failed to generate health plan: ' + error.message, 'error');
+      } finally {
+        // Re-enable button
+        btn.disabled = false;
+        btn.innerHTML = originalContent;
+      }
+    }
+    
+    function displayHealthPlan(planText) {
+      const modal = document.getElementById('healthPlanModal');
+      const content = document.getElementById('healthPlanContent');
+      
+      // Convert markdown-like text to HTML
+      let htmlContent = planText
+        .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+        .replace(/^## (.+)$/gm, '<h2>$2</h2>')
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+        .trim();
+      
+      // Wrap in paragraphs if not already wrapped
+      if (!htmlContent.startsWith('<')) {
+        htmlContent = '<p>' + htmlContent + '</p>';
+      }
+      
+      content.innerHTML = htmlContent;
+      modal.style.display = 'flex';
+      
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeHealthPlanModal() {
+      const modal = document.getElementById('healthPlanModal');
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+    
+    function downloadHealthPlan() {
+      if (!currentHealthPlan) {
+        showNotification('⚠️ No health plan available to download', 'warning');
+        return;
+      }
+      
+      // Create a blob with the plan text
+      const blob = new Blob([currentHealthPlan], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      
+      // Create download link
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'My_Health_Plan_' + new Date().toISOString().split('T')[0] + '.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      showNotification('✅ Health plan downloaded successfully!', 'success');
+    }
+    
+    function showNotification(message, type = 'info') {
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.className = `alert alert-${type}`;
+      notification.style.cssText = `
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        z-index: 10000;
+        min-width: 300px;
+        max-width: 500px;
+        animation: slideInRight 0.3s ease;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      `;
+      notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span>${message}</span>
+          <button onclick="this.parentElement.parentElement.remove()" style="margin-left: auto; background: none; border: none; font-size: 1.5rem; cursor: pointer; opacity: 0.7;">&times;</button>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        if (notification.parentElement) {
+          notification.style.animation = 'slideOutRight 0.3s ease';
+          setTimeout(() => notification.remove(), 300);
+        }
+      }, 5000);
+    }
+    
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeHealthPlanModal();
+      }
+    });
+    
+    // Close modal on backdrop click
+    document.getElementById('healthPlanModal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'healthPlanModal') {
+        closeHealthPlanModal();
+      }
+    });
+  </script>
+  
+  <style>
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(2rem);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    @keyframes slideOutRight {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(2rem);
+      }
+    }
+  </style>
+</body>
+</html>
+
+
+
+

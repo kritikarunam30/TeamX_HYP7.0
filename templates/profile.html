@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile - Health AI</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="icon" href="/static/favicon.ico">
+  <!-- Chart.js CDN for interactive visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    /* Profile Page Specific Styles */
+    body {
+      background: var(--bg-secondary);
+    }
+
+    .profile-page {
+      padding-top: 2rem;
+      padding-bottom: 4rem;
+    }
+
+    .profile-header-card {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 1.5rem;
+      padding: 3rem 2rem;
+      margin-bottom: 2rem;
+      color: white;
+      box-shadow: var(--shadow-xl);
+    }
+
+    .profile-info {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .profile-avatar {
+      width: 6rem;
+      height: 6rem;
+      border-radius: 50%;
+      background: white;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .profile-details h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .profile-meta {
+      display: flex;
+      gap: 2rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .profile-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      opacity: 0.9;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .history-card {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+    }
+
+    .history-table thead {
+      background: var(--bg-secondary);
+    }
+
+    .history-table th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .history-table td {
+      padding: 1rem;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.875rem;
+    }
+
+    .history-table tbody tr {
+      transition: background 0.2s;
+    }
+
+    .history-table tbody tr:hover {
+      background: var(--bg-secondary);
+    }
+
+    .risk-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.375rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .risk-low {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .risk-moderate {
+      background: #fed7aa;
+      color: #92400e;
+    }
+
+    .risk-high {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .grade-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.5rem;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .grade-a {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .grade-b {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .grade-c {
+      background: #fed7aa;
+      color: #92400e;
+    }
+
+    .grade-d {
+      background: #fecaca;
+      color: #991b1b;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-state svg {
+      width: 4rem;
+      height: 4rem;
+      margin: 0 auto 1rem;
+      opacity: 0.3;
+    }
+
+    .empty-state h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .empty-state p {
+      margin-bottom: 1.5rem;
+    }
+
+    .icon-lg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    /* Visualization Section Styles */
+    .visualization-section {
+      margin-top: 3rem;
+    }
+
+    .viz-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .viz-header h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .viz-header p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    .insights-card {
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #075985 100%);
+      color: white;
+      border-radius: 1.5rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-xl);
+    }
+
+    .insights-card h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .insights-card > p {
+      opacity: 0.9;
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem;
+    }
+
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .insight-item {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: transform 0.2s;
+    }
+
+    .insight-item:hover {
+      transform: translateY(-4px);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .insight-label {
+      font-size: 0.875rem;
+      opacity: 0.9;
+      margin-bottom: 0.5rem;
+    }
+
+    .insight-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .insight-change {
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .insight-change.positive {
+      color: #4ade80;
+    }
+
+    .insight-change.negative {
+      color: #f87171;
+    }
+
+    .insight-change.neutral {
+      color: #fbbf24;
+    }
+
+    .viz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .chart-card {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
+    }
+
+    .chart-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .chart-card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .chart-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .chart-icon {
+      font-size: 1.5rem;
+    }
+
+    .chart-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary);
+      background: rgba(14, 165, 233, 0.1);
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.5rem;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+    }
+
+    .chart-container.large {
+      height: 400px;
+    }
+
+    /* Mini Pie Chart Styles */
+    .mini-pie-container {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .risk-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    @media (max-width: 768px) {
+      .history-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+      
+      .profile-info {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .viz-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chart-container {
+        height: 250px;
+      }
+
+      .chart-container.large {
+        height: 300px;
+      }
+
+      .insights-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .history-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+      
+      .profile-info {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  {% include "components/header.html" %}
+
+  <!-- Profile Page -->
+  <div class="profile-page">
+    <div class="container">
+      <!-- Profile Header -->
+      <div class="profile-header-card">
+        <div class="profile-info">
+          <div class="profile-avatar">
+            {{ user.username[0].upper() }}
+          </div>
+          <div class="profile-details">
+            <h1>{{ user.username }}</h1>
+            <div class="profile-meta">
+              <div class="profile-meta-item">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                <span>{{ user.email }}</span>
+              </div>
+              <div class="profile-meta-item">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span>Joined {{ user.created_at.split(' ')[0] if user.created_at else 'Recently' }}</span>
+              </div>
+              <div class="profile-meta-item">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span>{{ assessments|length }} Assessments Completed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assessment History -->
+      <!-- Visualization Section -->
+      {% if assessments and assessments|length >= 1 %}
+      <div class="visualization-section">
+        <div class="viz-header">
+          <h2>📊 Your Health Progress</h2>
+          <p>Track your health journey over time with interactive visualizations</p>
+        </div>
+
+        <!-- Insights Dashboard -->
+        <div class="insights-card">
+          <h3>📈 Key Insights</h3>
+          <p>Summary of your health metrics across all assessments</p>
+          <div class="insights-grid">
+            <div class="insight-item">
+              <div class="insight-label">Average Health Score</div>
+              <div class="insight-value" id="avgScore">--</div>
+              <div class="insight-change" id="avgScoreChange">
+                <span>Loading...</span>
+              </div>
+            </div>
+            <div class="insight-item">
+              <div class="insight-label">Best Health Score</div>
+              <div class="insight-value" id="bestScore">--</div>
+              <div class="insight-change" id="bestScoreDate">
+                <span>--</span>
+              </div>
+            </div>
+            <div class="insight-item">
+              <div class="insight-label">Total Assessments</div>
+              <div class="insight-value" id="totalAssessments">{{ assessments|length }}</div>
+              <div class="insight-change neutral">
+                <span>📋 Tracked consistently</span>
+              </div>
+            </div>
+            <div class="insight-item">
+              <div class="insight-label">Health Trend</div>
+              <div class="insight-value" id="trendValue">--</div>
+              <div class="insight-change" id="trendChange">
+                <span>Loading...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="viz-grid">
+          <!-- Health Score Trend Chart -->
+          <div class="chart-card full-width">
+            <div class="chart-header">
+              <div class="chart-title">
+                <span class="chart-icon">📈</span>
+                Health Score Trend
+              </div>
+              <span class="chart-badge">Over Time</span>
+            </div>
+            <div class="chart-container large">
+              <canvas id="healthScoreTrendChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Risk Comparison Chart -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">
+                <span class="chart-icon">🎯</span>
+                Latest Risk Levels
+              </div>
+              <span class="chart-badge">Current</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="riskComparisonChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Individual Risk Trends -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">
+                <span class="chart-icon">📊</span>
+                Risk Category Trends
+              </div>
+              <span class="chart-badge">All Categories</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="multiRiskTrendChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="history-card">
+        <h2 class="section-title">
+          <svg class="icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Assessment History
+        </h2>
+
+        {% if assessments %}
+        <div style="overflow-x: auto;">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Health Score</th>
+                <th>Composite Risk</th>
+                <th>Grade</th>
+                <th>Status</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for assessment in assessments %}
+              <tr>
+                <td>{{ assessment.assessment_date }}</td>
+                <td>
+                  <strong style="font-size: 1rem; color: var(--success);">{{ "%.1f"|format(assessment.health_score) }}</strong>
+                </td>
+                <td>
+                  <strong style="font-size: 1.125rem; color: var(--primary);">{{ "%.1f"|format(assessment.composite_risk) }}%</strong>
+                </td>
+                <td>
+                  {% if assessment.health_score >= 90 %}
+                  <div class="grade-badge grade-a">A</div>
+                  {% elif assessment.health_score >= 80 %}
+                  <div class="grade-badge grade-b">B</div>
+                  {% elif assessment.health_score >= 70 %}
+                  <div class="grade-badge grade-c">C</div>
+                  {% else %}
+                  <div class="grade-badge grade-d">D</div>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if assessment.composite_risk < 30 %}
+                  <span class="risk-badge risk-low">Low Risk</span>
+                  {% elif assessment.composite_risk < 70 %}
+                  <span class="risk-badge risk-moderate">Moderate</span>
+                  {% else %}
+                  <span class="risk-badge risk-high">High Risk</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="mini-pie-container">
+                    <canvas id="pieChart-{{ loop.index }}" width="120" height="120"></canvas>
+                  </div>
+                  <div class="risk-legend">
+                    <div class="legend-item">
+                      <div class="legend-color" style="background: #ef4444;"></div>
+                      <span>Heart</span>
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-color" style="background: #f59e0b;"></div>
+                      <span>Diabetes</span>
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-color" style="background: #8b5cf6;"></div>
+                      <span>Hypertension</span>
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-color" style="background: #06b6d4;"></div>
+                      <span>Obesity</span>
+                    </div>
+                  </div>
+                  <script>
+                    // Create mini pie chart for this assessment
+                    (function() {
+                      const ctx = document.getElementById('pieChart-{{ loop.index }}');
+                      if (ctx) {
+                        new Chart(ctx, {
+                          type: 'doughnut',
+                          data: {
+                            labels: ['Heart Disease', 'Diabetes', 'Hypertension', 'Obesity'],
+                            datasets: [{
+                              data: [
+                                {{ "%.1f"|format(assessment.heart_risk) }},
+                                {{ "%.1f"|format(assessment.diabetes_risk) }},
+                                {{ "%.1f"|format(assessment.hypertension_risk) }},
+                                {{ "%.1f"|format(assessment.obesity_risk) }}
+                              ],
+                              backgroundColor: [
+                                '#ef4444',  // Heart - Red
+                                '#f59e0b',  // Diabetes - Amber
+                                '#8b5cf6',  // Hypertension - Purple
+                                '#06b6d4'   // Obesity - Cyan
+                              ],
+                              borderWidth: 2,
+                              borderColor: '#fff'
+                            }]
+                          },
+                          options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                              legend: {
+                                display: false
+                              },
+                              tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 10,
+                                titleFont: { size: 12, weight: '600' },
+                                bodyFont: { size: 11 },
+                                cornerRadius: 6,
+                                callbacks: {
+                                  label: function(context) {
+                                    return `${context.label}: ${context.parsed.toFixed(1)}%`;
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        });
+                      }
+                    })();
+                  </script>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          <h3>No Assessments Yet</h3>
+          <p>Start your health journey by taking your first assessment</p>
+          <a href="/assessment" class="btn btn-accent">Take Assessment</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer (if you have one) -->
+  
+  <!-- Chart.js Visualization Script -->
+  <script>
+    // Only run if we have assessments for visualization
+    {% if assessments and assessments|length >= 1 %}
+    document.addEventListener('DOMContentLoaded', function() {
+      // Prepare assessment data from server
+      const assessments = {{ assessments | tojson }};
+      
+      // Sort assessments by date (oldest first)
+      assessments.sort((a, b) => {
+        const dateA = new Date(a.created_at.replace(' ', 'T'));
+        const dateB = new Date(b.created_at.replace(' ', 'T'));
+        return dateA - dateB;
+      });
+      
+      // Extract data for charts - with proper date parsing
+      const dates = assessments.map(a => {
+        // Convert MongoDB datetime format to proper Date object
+        const dateStr = a.created_at.includes('T') ? a.created_at : a.created_at.replace(' ', 'T');
+        const date = new Date(dateStr);
+        return date;
+      });
+      
+      const dateLabels = dates.map(d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+      
+      const healthScores = assessments.map(a => a.health_score || 0);
+      const compositeRisks = assessments.map(a => a.composite_risk || 0);
+      const heartRisks = assessments.map(a => a.heart_risk || 0);
+      const diabetesRisks = assessments.map(a => a.diabetes_risk || 0);
+      const hypertensionRisks = assessments.map(a => a.hypertension_risk || 0);
+      const obesityRisks = assessments.map(a => a.obesity_risk || 0);
+      
+      // Calculate insights
+      const avgScore = (healthScores.reduce((a, b) => a + b, 0) / healthScores.length).toFixed(1);
+      const bestScore = Math.max(...healthScores).toFixed(1);
+      const firstScore = healthScores[0];
+      const lastScore = healthScores[healthScores.length - 1];
+      const scoreChange = healthScores.length > 1 ? (lastScore - firstScore).toFixed(1) : '0.0';
+      const percentChange = healthScores.length > 1 ? ((scoreChange / firstScore) * 100).toFixed(1) : '0.0';
+      
+      // Update insights
+      document.getElementById('avgScore').textContent = avgScore;
+      document.getElementById('bestScore').textContent = bestScore;
+      
+      const bestScoreIndex = healthScores.indexOf(Math.max(...healthScores));
+      const bestScoreDateStr = assessments[bestScoreIndex].created_at.includes('T') ? 
+        assessments[bestScoreIndex].created_at : 
+        assessments[bestScoreIndex].created_at.replace(' ', 'T');
+      const bestScoreDate = new Date(bestScoreDateStr).toLocaleDateString();
+      document.getElementById('bestScoreDate').innerHTML = `<span>🏆 Achieved on ${bestScoreDate}</span>`;
+      
+      const avgScoreChangeEl = document.getElementById('avgScoreChange');
+      if (parseFloat(avgScore) >= 75) {
+        avgScoreChangeEl.className = 'insight-change positive';
+        avgScoreChangeEl.innerHTML = '<span>✅ Excellent health</span>';
+      } else if (parseFloat(avgScore) >= 50) {
+        avgScoreChangeEl.className = 'insight-change neutral';
+        avgScoreChangeEl.innerHTML = '<span>⚠️ Good, room for improvement</span>';
+      } else {
+        avgScoreChangeEl.className = 'insight-change negative';
+        avgScoreChangeEl.innerHTML = '<span>⚠️ Needs attention</span>';
+      }
+      
+      const trendValueEl = document.getElementById('trendValue');
+      const trendChangeEl = document.getElementById('trendChange');
+      
+      if (healthScores.length === 1) {
+        trendValueEl.textContent = 'N/A';
+        trendChangeEl.className = 'insight-change neutral';
+        trendChangeEl.innerHTML = '<span>📊 Take more assessments to see trends</span>';
+      } else {
+        trendValueEl.textContent = `${scoreChange > 0 ? '+' : ''}${scoreChange}`;
+        
+        if (scoreChange > 0) {
+          trendChangeEl.className = 'insight-change positive';
+          trendChangeEl.innerHTML = `<span>📈 Up ${percentChange}% from start</span>`;
+        } else if (scoreChange < 0) {
+          trendChangeEl.className = 'insight-change negative';
+          trendChangeEl.innerHTML = `<span>📉 Down ${Math.abs(percentChange)}% from start</span>`;
+        } else {
+          trendChangeEl.className = 'insight-change neutral';
+          trendChangeEl.innerHTML = '<span>➡️ Stable trend</span>';
+        }
+      }
+      
+      // Chart 1: Health Score Trend Line Chart
+      const ctx1 = document.getElementById('healthScoreTrendChart');
+      if (ctx1) {
+        new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: dateLabels,
+            datasets: [{
+              label: 'Health Score',
+              data: healthScores,
+              borderColor: '#0ea5e9',
+              backgroundColor: 'rgba(14, 165, 233, 0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.4,
+              pointRadius: 5,
+              pointHoverRadius: 8,
+              pointBackgroundColor: '#0ea5e9',
+              pointBorderColor: '#fff',
+              pointBorderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                  font: { size: 14, weight: '600' },
+                  padding: 15,
+                  usePointStyle: true
+                }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                padding: 12,
+                titleFont: { size: 14, weight: '600' },
+                bodyFont: { size: 13 },
+                cornerRadius: 8,
+                displayColors: false,
+                callbacks: {
+                  title: function(context) {
+                    // Show properly formatted date in tooltip
+                    const dateIndex = context[0].dataIndex;
+                    return dates[dateIndex].toLocaleDateString('en-US', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    });
+                  },
+                  label: function(context) {
+                    return `Health Score: ${context.parsed.y.toFixed(1)}`;
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                ticks: {
+                  callback: function(value) {
+                    return value.toFixed(0);
+                  },
+                  font: { size: 12 }
+                },
+                grid: {
+                  color: 'rgba(0, 0, 0, 0.05)'
+                }
+              },
+              x: {
+                ticks: {
+                  font: { size: 11 }
+                },
+                grid: {
+                  display: false
+                }
+              }
+            },
+            animation: {
+              duration: 1500,
+              easing: 'easeInOutQuart'
+            }
+          }
+        });
+      }
+      
+      // Chart 2: Latest Risk Levels Radar Chart
+      const latestAssessment = assessments[assessments.length - 1];
+      const ctx2 = document.getElementById('riskComparisonChart');
+      if (ctx2) {
+        new Chart(ctx2, {
+          type: 'radar',
+          data: {
+            labels: ['Heart', 'Diabetes', 'Hypertension', 'Obesity'],
+            datasets: [{
+              label: 'Risk Level (%)',
+              data: [
+                latestAssessment.heart_risk || 0,
+                latestAssessment.diabetes_risk || 0,
+                latestAssessment.hypertension_risk || 0,
+                latestAssessment.obesity_risk || 0
+              ],
+              backgroundColor: 'rgba(239, 68, 68, 0.2)',
+              borderColor: '#ef4444',
+              borderWidth: 2,
+              pointBackgroundColor: '#ef4444',
+              pointBorderColor: '#fff',
+              pointHoverBackgroundColor: '#fff',
+              pointHoverBorderColor: '#ef4444',
+              pointRadius: 4,
+              pointHoverRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                  font: { size: 14, weight: '600' },
+                  padding: 15,
+                  usePointStyle: true
+                }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                padding: 12,
+                titleFont: { size: 14, weight: '600' },
+                bodyFont: { size: 13 },
+                cornerRadius: 8,
+                callbacks: {
+                  label: function(context) {
+                    return `${context.label}: ${context.parsed.r.toFixed(1)}%`;
+                  }
+                }
+              }
+            },
+            scales: {
+              r: {
+                beginAtZero: true,
+                max: 100,
+                ticks: {
+                  stepSize: 20,
+                  font: { size: 11 }
+                },
+                grid: {
+                  color: 'rgba(0, 0, 0, 0.1)'
+                },
+                pointLabels: {
+                  font: { size: 12, weight: '600' }
+                }
+              }
+            },
+            animation: {
+              duration: 1500,
+              easing: 'easeInOutQuart'
+            }
+          }
+        });
+      }
+      
+      // Chart 3: Multi-Line Risk Trends
+      const ctx3 = document.getElementById('multiRiskTrendChart');
+      if (ctx3) {
+        new Chart(ctx3, {
+          type: 'line',
+          data: {
+            labels: dateLabels,
+            datasets: [
+              {
+                label: 'Heart',
+                data: heartRisks,
+                borderColor: '#ef4444',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                pointRadius: 3,
+                pointHoverRadius: 6
+              },
+              {
+                label: 'Diabetes',
+                data: diabetesRisks,
+                borderColor: '#f59e0b',
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                pointRadius: 3,
+                pointHoverRadius: 6
+              },
+              {
+                label: 'Hypertension',
+                data: hypertensionRisks,
+                borderColor: '#8b5cf6',
+                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                pointRadius: 3,
+                pointHoverRadius: 6
+              },
+              {
+                label: 'Obesity',
+                data: obesityRisks,
+                borderColor: '#ec4899',
+                backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                pointRadius: 3,
+                pointHoverRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                  font: { size: 12, weight: '600' },
+                  padding: 12,
+                  usePointStyle: true,
+                  boxWidth: 8,
+                  boxHeight: 8
+                }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                padding: 12,
+                titleFont: { size: 13, weight: '600' },
+                bodyFont: { size: 12 },
+                cornerRadius: 8,
+                mode: 'index',
+                intersect: false,
+                callbacks: {
+                  label: function(context) {
+                    return `${context.dataset.label}: ${context.parsed.y.toFixed(1)}%`;
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                ticks: {
+                  callback: function(value) {
+                    return value.toFixed(0) + '%';
+                  },
+                  font: { size: 11 }
+                },
+                grid: {
+                  color: 'rgba(0, 0, 0, 0.05)'
+                }
+              },
+              x: {
+                ticks: {
+                  font: { size: 9 },
+                  maxRotation: 45,
+                  minRotation: 45,
+                  autoSkip: true,
+                  maxTicksLimit: 8
+                },
+                grid: {
+                  display: false
+                }
+              }
+            },
+            interaction: {
+              mode: 'nearest',
+              axis: 'x',
+              intersect: false
+            },
+            animation: {
+              duration: 1500,
+              easing: 'easeInOutQuart'
+            }
+          }
+        });
+      }
+    });
+    {% endif %}
+  </script>
+  
+  <script src="/static/js/main.js"></script>
+</body>
+</html>

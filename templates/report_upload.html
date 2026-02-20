@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Health Reports - HealthVision AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .upload-page {
+            min-height: 100vh;
+            background: var(--bg-secondary);
+            padding: 3rem 1rem;
+        }
+
+        .upload-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .upload-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .upload-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-header p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+        }
+
+        .upload-card {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box {
+            background: rgba(14, 165, 233, 0.05);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-box h3 {
+            color: var(--primary);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-box li {
+            color: var(--text-secondary);
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .info-box li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            background: white;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .report-description {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        .report-description.active {
+            display: block;
+        }
+
+        .upload-zone {
+            border: 3px dashed var(--border-color);
+            border-radius: 1rem;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: rgba(14, 165, 233, 0.05);
+        }
+
+        .upload-zone.dragover {
+            border-color: var(--primary);
+            background: rgba(14, 165, 233, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-zone p {
+            font-size: 1.125rem;
+            color: var(--text-primary);
+            margin: 0.5rem 0;
+        }
+
+        .upload-zone .file-types {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* Report Upload Item Styles */
+        .report-upload-item {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .report-upload-item.extracting {
+            border-color: var(--warning);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .report-upload-item.success {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.02);
+        }
+
+        .report-upload-item.error {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.02);
+        }
+
+        .report-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .report-item-number {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .remove-report-btn {
+            background: transparent;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 1.5rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+
+        .remove-report-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            transform: scale(1.1);
+        }
+
+        .upload-zone-small {
+            border: 2px dashed var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .upload-zone-small:hover {
+            border-color: var(--primary);
+            background: rgba(14, 165, 233, 0.05);
+        }
+
+        .upload-zone-small.has-file {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .file-input-hidden {
+            display: none;
+        }
+
+        .file-info-display {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .file-icon-small {
+            font-size: 2rem;
+        }
+
+        .file-details-small h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .file-details-small p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .extracted-preview {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .extracted-preview.active {
+            display: block;
+        }
+
+        .extracted-preview h5 {
+            margin: 0 0 0.75rem 0;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .extracted-values {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .extracted-value {
+            background: var(--bg-secondary);
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            border-left: 3px solid var(--primary);
+        }
+
+        .extracted-value label {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+
+        .extracted-value span {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .add-another-btn {
+            width: 100%;
+            padding: 1.25rem;
+            background: transparent;
+            border: 2px dashed var(--primary);
+            border-radius: 0.75rem;
+            color: var(--primary);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .add-another-btn:hover {
+            background: rgba(14, 165, 233, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .files-preview-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .file-preview {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .file-preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .file-info-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .file-icon {
+            font-size: 2.5rem;
+        }
+
+        .file-details h3 {
+            margin: 0 0 0.25rem 0;
+            color: var(--text-primary);
+            font-size: 1.125rem;
+        }
+
+        .file-details p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .extraction-status {
+            display: none;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .extraction-status.processing {
+            display: block;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            color: #92400e;
+        }
+
+        .extraction-status.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: #065f46;
+        }
+
+        .extraction-status.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: #991b1b;
+        }
+
+        .extracted-data-preview {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .extracted-data-preview.active {
+            display: block;
+        }
+
+        .extracted-data-preview h4 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .data-item {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .data-item label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .data-item .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .data-item .unit {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-left: 0.25rem;
+        }
+
+        .warning-badge {
+            background: var(--warning);
+            color: white;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .action-buttons .btn {
+            flex: 1;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .upload-page {
+                padding: 2rem 1rem;
+            }
+
+            .upload-card {
+                padding: 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .data-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    {% include "components/header.html" %}
+
+    <div class="upload-page">
+        <div class="upload-container">
+            <!-- Page Header -->
+            <div class="upload-header">
+                <h1>📋 Upload Your Health Reports</h1>
+                <p>Auto-fill your assessment with existing medical data</p>
+            </div>
+
+            <div class="upload-card">
+                <div class="info-box">
+                    <h3>ℹ️ How It Works</h3>
+                    <ul>
+                        <li>Add one or more medical reports (different types)</li>
+                        <li>Select report type and upload PDF for each</li>
+                        <li>We'll automatically extract the values</li>
+                        <li>All data will be merged and pre-filled in your assessment</li>
+                        <li>You can skip this step and fill manually if you prefer</li>
+                    </ul>
+                </div>
+
+                <!-- Report Upload Items Container -->
+                <div id="reportsContainer"></div>
+
+                <!-- Add Another Button -->
+                <button type="button" class="add-another-btn" onclick="addReportUpload()">
+                    <span style="font-size: 1.5rem;">➕</span>
+                    <span>Add Another Report</span>
+                </button>
+
+                <!-- Global Extraction Status -->
+                <div id="extractionStatus" class="extraction-status"></div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-outline" onclick="skipUpload()">Skip & Fill Manually</button>
+                    <button type="button" class="btn btn-primary" id="extractBtn" onclick="extractAllReports()" disabled>
+                        Extract All Data
+                    </button>
+                    <button type="button" class="btn btn-primary" id="continueBtn" onclick="continueToAssessment()" style="display: none;">
+                        Continue to Assessment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let reportTypes = [];
+        let reports = [];
+        let reportIdCounter = 0;
+        let extractedReports = {};
+
+        // Load available report types
+        window.onload = async function() {
+            try {
+                console.log('📥 Loading report types...');
+                const response = await fetch('/api/report-types', {
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load report types');
+                }
+                
+                reportTypes = await response.json();
+                console.log('✅ Report types loaded:', reportTypes);
+                
+                // Add first report upload by default
+                addReportUpload();
+            } catch (error) {
+                console.error('❌ Error loading report types:', error);
+                showStatus('error', `Failed to load report types: ${error.message}`);
+            }
+        };
+
+        function addReportUpload() {
+            const id = reportIdCounter++;
+            const report = {
+                id: id,
+                type: null,
+                file: null,
+                extracted: null
+            };
+            reports.push(report);
+
+            const container = document.getElementById('reportsContainer');
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'report-upload-item';
+            itemDiv.id = `report-${id}`;
+            
+            const reportTypesOptions = reportTypes.map(t => 
+                `<option value="${t.value}">${t.display_name}</option>`
+            ).join('');
+            
+            itemDiv.innerHTML = `
+                <div class="report-item-header">
+                    <span class="report-item-number">Report #${reports.length}</span>
+                    ${reports.length > 1 ? `<button type="button" class="remove-report-btn" onclick="removeReport(${id})" title="Remove">✕</button>` : ''}
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Report Type:</label>
+                    <select class="form-select" id="type-${id}" onchange="updateReport(${id}, 'type', this.value)">
+                        <option value="">-- Select report type --</option>
+                        ${reportTypesOptions}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Upload PDF:</label>
+                    <div class="upload-zone-small" id="upload-zone-${id}" onclick="document.getElementById('file-${id}').click()">
+                        <p style="margin: 0; color: var(--text-secondary);">📄 Click to select PDF file (Max 10MB)</p>
+                    </div>
+                    <input type="file" id="file-${id}" class="file-input-hidden" accept=".pdf" onchange="handleFileUpload(${id}, event)">
+                    <div id="file-info-${id}"></div>
+                </div>
+
+                <div id="status-${id}" class="extraction-status"></div>
+                <div id="preview-${id}" class="extracted-preview"></div>
+            `;
+
+            container.appendChild(itemDiv);
+            updateExtractButton();
+        }
+
+        function removeReport(id) {
+            const index = reports.findIndex(r => r.id === id);
+            if (index > -1) {
+                reports.splice(index, 1);
+                delete extractedReports[id];
+                document.getElementById(`report-${id}`).remove();
+                
+                // Renumber remaining reports
+                reports.forEach((r, idx) => {
+                    const elem = document.getElementById(`report-${r.id}`);
+                    if (elem) {
+                        elem.querySelector('.report-item-number').textContent = `Report #${idx + 1}`;
+                    }
+                });
+
+                updateExtractButton();
+                
+                // Hide continue button if no successful extractions
+                if (Object.keys(extractedReports).length === 0) {
+                    document.getElementById('continueBtn').style.display = 'none';
+                    document.getElementById('extractBtn').style.display = 'block';
+                }
+            }
+        }
+
+        function updateReport(id, field, value) {
+            const report = reports.find(r => r.id === id);
+            if (report) {
+                report[field] = value;
+                updateExtractButton();
+            }
+        }
+
+        function handleFileUpload(id, event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validate
+            if (file.type !== 'application/pdf') {
+                showReportStatus(id, 'error', '✗ Please upload a PDF file');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                showReportStatus(id, 'error', '✗ File size must be less than 10MB');
+                return;
+            }
+
+            // Update report
+            const report = reports.find(r => r.id === id);
+            if (report) {
+                report.file = file;
+                
+                // Update UI
+                const uploadZone = document.getElementById(`upload-zone-${id}`);
+                uploadZone.classList.add('has-file');
+                uploadZone.innerHTML = '<p style="margin: 0; color: var(--success); font-weight: 600;">✓ File selected</p>';
+                
+                const fileInfoDiv = document.getElementById(`file-info-${id}`);
+                fileInfoDiv.innerHTML = `
+                    <div class="file-info-display">
+                        <div class="file-icon-small">📄</div>
+                        <div class="file-details-small">
+                            <h4>${escapeHtml(file.name)}</h4>
+                            <p>${formatFileSize(file.size)}</p>
+                        </div>
+                    </div>
+                `;
+
+                updateExtractButton();
+            }
+        }
+
+        function updateExtractButton() {
+            const btn = document.getElementById('extractBtn');
+            const hasValidReports = reports.some(r => r.type && r.file);
+            btn.disabled = !hasValidReports;
+        }
+
+        async function extractAllReports() {
+            const validReports = reports.filter(r => r.type && r.file);
+            
+            if (validReports.length === 0) {
+                showStatus('error', 'Please add at least one report with type and file selected');
+                return;
+            }
+
+            // Disable extract button
+            document.getElementById('extractBtn').disabled = true;
+            showStatus('processing', `<div class="spinner"></div> Extracting data from ${validReports.length} report(s)...`);
+
+            let successCount = 0;
+            extractedReports = {};
+
+            for (const report of validReports) {
+                const itemDiv = document.getElementById(`report-${report.id}`);
+                itemDiv.classList.add('extracting');
+                
+                showReportStatus(report.id, 'processing', '<div class="spinner"></div> Extracting... Please wait.');
+
+                try {
+                    const formData = new FormData();
+                    formData.append('file', report.file);
+                    formData.append('report_type', report.type);
+
+                    const response = await fetch('/api/extract-report', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'include'
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        extractedReports[report.id] = result;
+                        report.extracted = result;
+                        successCount++;
+                        
+                        itemDiv.classList.remove('extracting');
+                        itemDiv.classList.add('success');
+                        showReportStatus(report.id, 'success', `✓ Extracted ${Object.keys(result.complete_data).length} fields successfully`);
+                        displayExtractedData(report.id, result);
+                    } else {
+                        itemDiv.classList.remove('extracting');
+                        itemDiv.classList.add('error');
+                        showReportStatus(report.id, 'error', '✗ Extraction failed: ' + (result.error || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error(`Extraction error for report ${report.id}:`, error);
+                    itemDiv.classList.remove('extracting');
+                    itemDiv.classList.add('error');
+                    showReportStatus(report.id, 'error', '✗ Error: ' + error.message);
+                }
+            }
+
+            // Show summary
+            if (successCount > 0) {
+                showStatus('success', `✓ Successfully extracted data from ${successCount} of ${validReports.length} report(s)`);
+                
+                // Show continue button
+                document.getElementById('extractBtn').style.display = 'none';
+                document.getElementById('continueBtn').style.display = 'block';
+            } else {
+                showStatus('error', '✗ Failed to extract data from any reports. Please check your files and try again.');
+                document.getElementById('extractBtn').disabled = false;
+            }
+        }
+
+        function displayExtractedData(reportId, result) {
+            const previewDiv = document.getElementById(`preview-${reportId}`);
+            previewDiv.classList.add('active');
+            
+            const data = result.complete_data;
+            if (Object.keys(data).length === 0) {
+                previewDiv.innerHTML = '<p style="color: var(--text-secondary); margin: 0;">No data extracted.</p>';
+                return;
+            }
+
+            let html = '<h5>Extracted Values</h5><div class="extracted-values">';
+            for (const [key, value] of Object.entries(data)) {
+                html += `
+                    <div class="extracted-value">
+                        <label>${formatFieldName(key)}</label>
+                        <span>${value}</span>
+                    </div>
+                `;
+            }
+            html += '</div>';
+            previewDiv.innerHTML = html;
+        }
+
+        function showReportStatus(reportId, type, message) {
+            const statusDiv = document.getElementById(`status-${reportId}`);
+            statusDiv.className = `extraction-status ${type}`;
+            statusDiv.innerHTML = message;
+        }
+
+        function formatFieldName(fieldName) {
+            return fieldName
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, l => l.toUpperCase());
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        function continueToAssessment() {
+            // Merge all extracted data from successful reports
+            const mergedFormData = {};
+            const mergedCompleteData = {};
+            
+            for (const result of Object.values(extractedReports)) {
+                Object.assign(mergedFormData, result.form_data);
+                Object.assign(mergedCompleteData, result.complete_data);
+            }
+
+            // Store in sessionStorage for assessment page
+            sessionStorage.setItem('report_extracted_data', JSON.stringify({
+                success: true,
+                form_data: mergedFormData,
+                complete_data: mergedCompleteData,
+                report_count: Object.keys(extractedReports).length
+            }));
+
+            console.log('✓ Stored extracted data:', {
+                form_fields: Object.keys(mergedFormData).length,
+                total_fields: Object.keys(mergedCompleteData).length,
+                report_count: Object.keys(extractedReports).length
+            });
+
+            // Redirect directly to assessment page (X-ray feature disabled)
+            window.location.href = '/assessment';
+        }
+
+        function skipUpload() {
+            // Clear any report data and go directly to assessment (X-ray feature disabled)
+            sessionStorage.removeItem('report_extracted_data');
+            window.location.href = '/assessment';
+        }
+
+        function showStatus(type, message) {
+            const statusDiv = document.getElementById('extractionStatus');
+            statusDiv.className = `extraction-status ${type}`;
+            statusDiv.innerHTML = message;
+        }
+    </script>
+</body>
+</html>

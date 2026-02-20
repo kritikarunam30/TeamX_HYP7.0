@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Health AI</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="icon" href="/static/favicon.ico">
+  <style>
+    /* Register Page Specific Styles */
+    .register-page {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #075985 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .register-card {
+      background: white;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      padding: 3rem 2.5rem;
+      width: 100%;
+      max-width: 480px;
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .register-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .register-logo {
+      width: 4rem;
+      height: 4rem;
+      border-radius: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .register-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .register-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid var(--border-color);
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .password-toggle:hover {
+      color: var(--primary);
+    }
+
+    .password-strength {
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .strength-weak { color: #ef4444; }
+    .strength-medium { color: #f59e0b; }
+    .strength-strong { color: #10b981; }
+
+    .password-match {
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .match-error { color: #ef4444; }
+    .match-success { color: #10b981; }
+
+    .password-requirements {
+      margin-top: 0.5rem;
+      padding: 0.75rem;
+      background: #f9fafb;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    .requirement {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+      color: #6b7280;
+    }
+
+    .requirement.met {
+      color: #10b981;
+    }
+
+    .requirement-icon {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+
+    .btn-register {
+      width: 100%;
+      padding: 0.875rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      margin-top: 1rem;
+    }
+
+    .btn-register:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.3);
+    }
+
+    .btn-register:active {
+      transform: translateY(0);
+    }
+
+    .btn-register:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 1.5rem 0;
+      position: relative;
+    }
+
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--border-color);
+    }
+
+    .divider span {
+      background: white;
+      padding: 0 1rem;
+      color: var(--text-secondary);
+      position: relative;
+      font-size: 0.875rem;
+    }
+
+    .login-prompt {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .login-prompt a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .login-prompt a:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 0.75rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .alert-error {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    .alert-success {
+      background: #d1fae5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+    }
+
+    .back-home {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.875rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      transition: all 0.2s;
+    }
+
+    .back-home:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .icon {
+      width: 1rem;
+      height: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="register-page">
+    <a href="/" class="back-home">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Back to Home
+    </a>
+
+    <div class="register-card">
+      <div class="register-header">
+        <div class="register-logo">
+          <svg style="width: 2rem; height: 2rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+        <h1 class="register-title">Create Account</h1>
+        <p class="register-subtitle">Join us to start your health journey</p>
+      </div>
+
+      {% if error %}
+      <div class="alert alert-error" id="alert">
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="POST" action="/register" id="registerForm">
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            class="form-input" 
+            placeholder="Choose a username" 
+            required 
+            minlength="3"
+            autofocus
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">Email</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            class="form-input" 
+            placeholder="your.email@example.com" 
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <div class="password-wrapper">
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              class="form-input" 
+              placeholder="Create a strong password" 
+              required 
+              minlength="6"
+            >
+            <button type="button" class="password-toggle" id="togglePassword">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="password-strength" id="strength"></div>
+          <div class="password-requirements">
+            <div class="requirement" id="req-length">
+              <svg class="requirement-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+              <span>At least 6 characters</span>
+            </div>
+            <div class="requirement" id="req-letter">
+              <svg class="requirement-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+              <span>Contains letters</span>
+            </div>
+            <div class="requirement" id="req-number">
+              <svg class="requirement-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+              <span>Contains numbers</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm_password" class="form-label">Confirm Password</label>
+          <div class="password-wrapper">
+            <input 
+              type="password" 
+              id="confirm_password" 
+              name="confirm_password" 
+              class="form-input" 
+              placeholder="Re-enter your password" 
+              required
+            >
+            <button type="button" class="password-toggle" id="toggleConfirmPassword">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="password-match" id="matchMessage"></div>
+        </div>
+
+        <button type="submit" class="btn-register" id="submitBtn">Create Account</button>
+      </form>
+
+      <div class="divider">
+        <span>Already have an account?</span>
+      </div>
+
+      <div class="login-prompt">
+        <a href="/login">Sign in here</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Password toggles
+    const togglePassword = document.getElementById('togglePassword');
+    const password = document.getElementById('password');
+    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+    const confirmPassword = document.getElementById('confirm_password');
+
+    togglePassword.addEventListener('click', function() {
+      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+      password.setAttribute('type', type);
+      
+      this.innerHTML = type === 'password' ? 
+        `<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        </svg>` :
+        `<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+        </svg>`;
+    });
+
+    toggleConfirmPassword.addEventListener('click', function() {
+      const type = confirmPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+      confirmPassword.setAttribute('type', type);
+      
+      this.innerHTML = type === 'password' ? 
+        `<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        </svg>` :
+        `<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+        </svg>`;
+    });
+
+    // Password strength checker
+    const strengthDiv = document.getElementById('strength');
+    const checkIcon = `<svg class="requirement-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+    const xIcon = `<svg class="requirement-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+
+    password.addEventListener('input', function() {
+      const pwd = this.value;
+      let strength = 0;
+      
+      // Check length
+      const lengthReq = document.getElementById('req-length');
+      if (pwd.length >= 6) {
+        strength += 1;
+        lengthReq.classList.add('met');
+        lengthReq.querySelector('svg').outerHTML = checkIcon;
+      } else {
+        lengthReq.classList.remove('met');
+        lengthReq.querySelector('svg').outerHTML = xIcon;
+      }
+      
+      // Check for letters
+      const letterReq = document.getElementById('req-letter');
+      if (/[a-zA-Z]/.test(pwd)) {
+        strength += 1;
+        letterReq.classList.add('met');
+        letterReq.querySelector('svg').outerHTML = checkIcon;
+      } else {
+        letterReq.classList.remove('met');
+        letterReq.querySelector('svg').outerHTML = xIcon;
+      }
+      
+      // Check for numbers
+      const numberReq = document.getElementById('req-number');
+      if (/[0-9]/.test(pwd)) {
+        strength += 1;
+        numberReq.classList.add('met');
+        numberReq.querySelector('svg').outerHTML = checkIcon;
+      } else {
+        numberReq.classList.remove('met');
+        numberReq.querySelector('svg').outerHTML = xIcon;
+      }
+      
+      // Display strength
+      if (pwd.length === 0) {
+        strengthDiv.textContent = '';
+      } else if (strength <= 1) {
+        strengthDiv.textContent = 'Weak password';
+        strengthDiv.className = 'password-strength strength-weak';
+      } else if (strength === 2) {
+        strengthDiv.textContent = 'Medium password';
+        strengthDiv.className = 'password-strength strength-medium';
+      } else {
+        strengthDiv.textContent = 'Strong password';
+        strengthDiv.className = 'password-strength strength-strong';
+      }
+    });
+
+    // Password match checker
+    const matchMessage = document.getElementById('matchMessage');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function checkPasswordMatch() {
+      if (confirmPassword.value.length === 0) {
+        matchMessage.textContent = '';
+        return;
+      }
+      
+      if (password.value === confirmPassword.value) {
+        matchMessage.textContent = '✓ Passwords match';
+        matchMessage.className = 'password-match match-success';
+        submitBtn.disabled = false;
+      } else {
+        matchMessage.textContent = '✗ Passwords do not match';
+        matchMessage.className = 'password-match match-error';
+        submitBtn.disabled = true;
+      }
+    }
+
+    password.addEventListener('input', checkPasswordMatch);
+    confirmPassword.addEventListener('input', checkPasswordMatch);
+
+    // Auto-hide alerts
+    const alert = document.getElementById('alert');
+    if (alert) {
+      setTimeout(() => {
+        alert.style.opacity = '0';
+        alert.style.transform = 'translateY(-10px)';
+        alert.style.transition = 'all 0.3s ease-out';
+        setTimeout(() => alert.remove(), 300);
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
+        passwordInput.addEventListener('input', checkPasswordMatch);
+
+        // Form validation
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+                return false;
+            }
+            
+            if (password.length < 6) {
+                e.preventDefault();
+                alert('Password must be at least 6 characters long!');
+                return false;
+            }
+        });
+
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>
