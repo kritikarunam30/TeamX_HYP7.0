@@ -11,10 +11,10 @@ import threading
 
 class WhatsAppHandler:
     def __init__(self, nutrition_analyzer=None):
-        # Load Twilio credentials from environment variables with fallbacks
-        self.account_sid = os.getenv('TWILIO_ACCOUNT_SID', 'AC271014c53ac57e81101f47a7fb25094e')
-        self.auth_token = os.getenv('TWILIO_AUTH_TOKEN', 'ce4162f0063c2b14928c02e092c71067')
-        self.whatsapp_number = os.getenv('TWILIO_WHATSAPP_NUMBER', 'whatsapp:+14155238886')
+        # Load Twilio credentials from environment variables
+        self.account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+        self.auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+        self.whatsapp_number = os.getenv('TWILIO_WHATSAPP_NUMBER')
         
         # Store nutrition analyzer reference
         self.nutrition_analyzer = nutrition_analyzer
