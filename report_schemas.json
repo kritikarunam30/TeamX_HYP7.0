@@ -1,0 +1,120 @@
+{
+  "lipid_profile": {
+    "display_name": "Lipid Profile",
+    "description": "Blood test measuring cholesterol and triglycerides",
+    "form_mappings": {
+      "total_cholesterol": "cholesterol",
+      "hdl_cholesterol": "hdl",
+      "ldl_cholesterol": "ldl",
+      "triglycerides": "triglycerides",
+      "fasting_glucose": "glucose"
+    },
+    "extraction_patterns": {
+      "total_cholesterol": ["total cholesterol", "cholesterol total", "total chol"],
+      "hdl_cholesterol": ["hdl", "hdl cholesterol", "high density lipoprotein"],
+      "ldl_cholesterol": ["ldl", "ldl cholesterol", "low density lipoprotein"],
+      "triglycerides": ["triglycerides", "trig"],
+      "fasting_glucose": ["fasting glucose", "fasting blood sugar", "fbs", "glucose fasting"],
+      "vldl": ["vldl", "very low density lipoprotein"],
+      "cholesterol_hdl_ratio": ["chol/hdl ratio", "cholesterol hdl ratio"],
+      "non_hdl_cholesterol": ["non hdl", "non-hdl cholesterol"]
+    },
+    "units": {
+      "total_cholesterol": "mg/dL",
+      "hdl_cholesterol": "mg/dL",
+      "ldl_cholesterol": "mg/dL",
+      "triglycerides": "mg/dL",
+      "fasting_glucose": "mg/dL",
+      "vldl": "mg/dL"
+    },
+    "normal_ranges": {
+      "total_cholesterol": {"min": 0, "max": 200},
+      "hdl_cholesterol": {"min": 40, "max": 200},
+      "ldl_cholesterol": {"min": 0, "max": 100},
+      "triglycerides": {"min": 0, "max": 150},
+      "fasting_glucose": {"min": 70, "max": 100}
+    }
+  },
+  "cbc": {
+    "display_name": "Complete Blood Count (CBC)",
+    "description": "Blood test measuring various blood components",
+    "form_mappings": {
+      "hemoglobin": "insulin",
+      "rbc_count": "insulin"
+    },
+    "extraction_patterns": {
+      "hemoglobin": ["hemoglobin", "hb", "hgb"],
+      "rbc_count": ["rbc", "red blood cell count", "red blood cells", "erythrocytes"],
+      "wbc_count": ["wbc", "white blood cell count", "white blood cells", "leukocytes"],
+      "platelet_count": ["platelets", "platelet count", "thrombocytes"],
+      "hematocrit": ["hematocrit", "hct", "packed cell volume", "pcv"],
+      "mcv": ["mcv", "mean corpuscular volume"],
+      "mch": ["mch", "mean corpuscular hemoglobin"],
+      "mchc": ["mchc", "mean corpuscular hemoglobin concentration"],
+      "rdw": ["rdw", "red cell distribution width"],
+      "neutrophils": ["neutrophils", "neutrophil count"],
+      "lymphocytes": ["lymphocytes", "lymphocyte count"],
+      "monocytes": ["monocytes", "monocyte count"],
+      "eosinophils": ["eosinophils", "eosinophil count"],
+      "basophils": ["basophils", "basophil count"]
+    },
+    "units": {
+      "hemoglobin": "g/dL",
+      "rbc_count": "million/µL",
+      "wbc_count": "thousand/µL",
+      "platelet_count": "thousand/µL",
+      "hematocrit": "%",
+      "mcv": "fL",
+      "mch": "pg",
+      "mchc": "g/dL"
+    },
+    "normal_ranges": {
+      "hemoglobin": {"male": {"min": 13.5, "max": 17.5}, "female": {"min": 12.0, "max": 15.5}},
+      "rbc_count": {"male": {"min": 4.5, "max": 5.9}, "female": {"min": 4.1, "max": 5.1}},
+      "wbc_count": {"min": 4.5, "max": 11.0},
+      "platelet_count": {"min": 150, "max": 400}
+    }
+  },
+  "hba1c": {
+    "display_name": "HbA1c (Glycated Hemoglobin)",
+    "description": "Average blood sugar levels over 2-3 months",
+    "form_mappings": {
+      "hba1c": "hba1c"
+    },
+    "extraction_patterns": {
+      "hba1c": ["hba1c", "hemoglobin a1c", "glycated hemoglobin", "glycosylated hemoglobin"],
+      "estimated_avg_glucose": ["estimated average glucose", "eag"]
+    },
+    "units": {
+      "hba1c": "%",
+      "estimated_avg_glucose": "mg/dL"
+    },
+    "normal_ranges": {
+      "hba1c": {"min": 4.0, "max": 5.6}
+    }
+  },
+  "thyroid_profile": {
+    "display_name": "Thyroid Function Test",
+    "description": "Tests for thyroid hormone levels",
+    "form_mappings": {},
+    "extraction_patterns": {
+      "tsh": ["tsh", "thyroid stimulating hormone"],
+      "t3": ["t3", "triiodothyronine", "total t3"],
+      "t4": ["t4", "thyroxine", "total t4"],
+      "free_t3": ["free t3", "ft3"],
+      "free_t4": ["free t4", "ft4"]
+    },
+    "units": {
+      "tsh": "mIU/L",
+      "t3": "ng/dL",
+      "t4": "µg/dL",
+      "free_t3": "pg/mL",
+      "free_t4": "ng/dL"
+    },
+    "normal_ranges": {
+      "tsh": {"min": 0.4, "max": 4.0},
+      "t3": {"min": 80, "max": 200},
+      "t4": {"min": 4.5, "max": 12.0}
+    }
+  }
+}
